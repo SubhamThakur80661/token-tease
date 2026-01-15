@@ -1,95 +1,75 @@
-import React, { useState } from 'react';
-import { FaUserCircle, FaCrown } from 'react-icons/fa';
+import React from 'react';
+import { FaTimes, FaLock, FaPlay } from 'react-icons/fa';
 
-const creators = [
-  { id: 1, name: "VelvetQueen", handle: "@velvet_eth", role: "Model", color: "bg-tt-pink" },
-  { id: 2, name: "CryptoJade", handle: "@jade_sol", role: "Artist", color: "bg-tt-olive" },
-  { id: 3, name: "NeonVixen", handle: "@neon_dao", role: "Dancer", color: "bg-tt-dark" },
-  { id: 4, name: "AlphaDoll", handle: "@alpha_btc", role: "Gamer", color: "bg-tt-beige" },
-  { id: 5, name: "RoseGold", handle: "@rose_nft", role: "Vlog", color: "bg-tt-pink" },
-  { id: 6, name: "DarkAura", handle: "@aura_web3", role: "Music", color: "bg-tt-olive" },
-];
-
-export default function ThreeDSlider() {
-  const [currDeg, setCurrDeg] = useState(0);
-
-  // Rotate 60 degrees because 360 / 6 items = 60
-  const rotate = (direction) => {
-    setCurrDeg(prev => direction === 'next' ? prev - 60 : prev + 60);
-  };
-
-  // Calculate which index is currently in front to highlight it
-  // The math ensures we handle negative rotations correctly
-  const activeIndex = (Math.abs(Math.round(currDeg / 60)) % 6);
-  // Note: Simple logic to highlight the card facing front (roughly)
+export default function ProfileModal({ creator, onClose }) {
+  if (!creator) return null;
 
   return (
-    <div className="relative w-full h-[600px] flex flex-col items-center justify-center perspective-1000 overflow-visible">
-      
-      {/* 3D Cylinder Container */}
+    <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
+      {/* Dark Overlay */}
       <div 
-        className="relative w-[280px] h-[400px] transform-style-3d transition-transform duration-1000 ease-out"
-        style={{ transform: `rotateY(${currDeg}deg)` }}
-      >
-        {creators.map((creator, index) => {
-          // 6 cards * 60deg = 360deg circle
-          const rotation = index * 60;
-          
-          return (
-            <div
-              key={creator.id}
-              className={`absolute inset-0 rounded-2xl border backdrop-blur-md p-6 flex flex-col justify-between transition-all duration-500
-                ${creator.color === 'bg-tt-pink' ? 'border-tt-pink/30 bg-tt-pink/10' : 'border-tt-olive/30 bg-tt-black/60'}
-                group hover:border-tt-pink hover:shadow-[0_0_50px_rgba(192,155,172,0.2)]`}
-              style={{
-                // translateZ(350px) pushes the cards out from the center to make the circle width
-                transform: `rotateY(${rotation}deg) translateZ(350px)`,
-                backfaceVisibility: 'visible' 
-              }}
-            >
-              {/* Card Content */}
-              <div className="flex justify-between items-start">
-                <div className="w-12 h-12 rounded-full bg-gradient-to-tr from-tt-dark to-tt-pink flex items-center justify-center">
-                    <FaUserCircle className="text-3xl text-tt-beige" />
-                </div>
-                <div className="flex items-center gap-1 text-[10px] font-mono border border-tt-beige/20 px-2 py-1 rounded-full text-tt-beige">
-                    <FaCrown className="text-yellow-500" /> TOP 1%
-                </div>
-              </div>
-              
-              <div className="space-y-2">
-                <div className="text-xs font-mono text-tt-pink uppercase tracking-widest">{creator.role}</div>
-                <h3 className="text-3xl font-serif font-bold text-white leading-none">{creator.name}</h3>
-                <p className="opacity-60 text-sm font-mono text-tt-olive">{creator.handle}</p>
-              </div>
+        className="absolute inset-0 bg-black/80 backdrop-blur-sm transition-opacity" 
+        onClick={onClose}
+      ></div>
 
-              {/* Glossy Overlay Effect */}
-              <div className="absolute inset-0 bg-gradient-to-b from-white/5 to-transparent rounded-2xl pointer-events-none"></div>
+      {/* The Glass Card */}
+      <div className="relative w-full max-w-lg bg-tt-dark/40 border border-tt-pink/30 rounded-3xl overflow-hidden shadow-[0_0_100px_rgba(192,155,172,0.2)] animate-in fade-in zoom-in duration-300">
+        
+        {/* Close Button */}
+        <button 
+          onClick={onClose}
+          className="absolute top-4 right-4 z-20 w-10 h-10 rounded-full bg-black/50 text-white flex items-center justify-center hover:bg-tt-pink hover:text-black transition-colors"
+        >
+          <FaTimes />
+        </button>
+
+        {/* 1. The Header (Creator Info) */}
+        <div className="relative z-10 p-8 pb-4 bg-gradient-to-b from-black/80 to-transparent">
+          <div className="flex items-center gap-4">
+            <div className="w-16 h-16 rounded-full border-2 border-tt-pink bg-tt-dark flex items-center justify-center text-2xl">
+              {creator.name[0]}
             </div>
-          );
-        })}
-      </div>
+            <div>
+              <h2 className="text-3xl font-serif text-white">{creator.name}</h2>
+              <p className="text-tt-pink font-mono text-sm">{creator.handle}</p>
+            </div>
+          </div>
+        </div>
 
-      {/* Controls */}
-      <div className="absolute -bottom-10 flex gap-12 z-20">
-        <button 
-            onClick={() => rotate('prev')} 
-            className="text-tt-pink font-mono text-sm tracking-[0.2em] hover:text-white transition-colors">
-            PREV
-        </button>
-        <div className="w-[1px] h-5 bg-tt-dark"></div>
-        <button 
-            onClick={() => rotate('next')} 
-            className="text-tt-pink font-mono text-sm tracking-[0.2em] hover:text-white transition-colors">
-            NEXT
-        </button>
-      </div>
+        {/* 2. The "Tease" Content (Blurred Video Placeholder) */}
+        <div className="relative h-64 bg-tt-black group">
+           {/* The Blurred Background */}
+           <div className="absolute inset-0 bg-gradient-to-tr from-tt-olive/20 to-tt-pink/20 blur-xl opacity-50"></div>
+           
+           {/* The Lock UI */}
+           <div className="absolute inset-0 flex flex-col items-center justify-center gap-4 z-10">
+              <div className="w-16 h-16 rounded-full bg-white/10 backdrop-blur-md border border-white/20 flex items-center justify-center">
+                 <FaLock className="text-2xl text-tt-pink" />
+              </div>
+              <p className="text-tt-beige font-serif italic opacity-80">
+                Premium Content Locked
+              </p>
+           </div>
+        </div>
 
-      {/* Required CSS for 3D to work */}
-      <style>{`
-        .perspective-1000 { perspective: 1200px; }
-        .transform-style-3d { transform-style: preserve-3d; }
-      `}</style>
+        {/* 3. The Footer (Payment Action) */}
+        <div className="p-8 bg-black/90 border-t border-white/10 text-center">
+           <div className="flex justify-between items-center mb-6 text-sm font-mono text-tt-olive">
+              <span>EXCLUSIVE ACCESS</span>
+              <span>1 VIDEO + 3 PHOTOS</span>
+           </div>
+           
+           <button className="w-full py-4 bg-tt-pink text-black font-bold text-lg rounded-xl hover:scale-[1.02] transition-transform shadow-[0_0_30px_rgba(192,155,172,0.4)] flex items-center justify-center gap-3">
+              <span>UNLOCK FOR</span>
+              <span className="bg-black/20 px-2 py-1 rounded text-sm">500 TT</span>
+           </button>
+           
+           <p className="mt-4 text-xs text-white/30">
+             Wallet Balance: 0 TT (Connect Wallet)
+           </p>
+        </div>
+
+      </div>
     </div>
   );
 }
